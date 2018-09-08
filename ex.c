@@ -7,41 +7,49 @@ typedef struct contato{
 
 
 void *pBuffer;
+int *p_int;
 
 void menu(){
-	printf("Escolha uma opÃ§Ã£o:\n0 - Sair\n1 - Incluir\n2 - Apagar\n3 - Buscar\n4 - Listar\n");
-	scanf("%d",pBuffer[1]);
+    int *aux;
+	printf("Escolha uma opção:\n0 - Sair\n1 - Incluir\n2 - Apagar\n3 - Buscar\n4 - Listar\n");
+	aux = pBuffer;
+	aux++;
+	scanf("%d",aux);
 	//int *x = (*int) malloc(sizeof(int));
 }
 
 void inserir(){
-	pBuffer = realloc(pBuffer, (2 * sizeof(int) + ((int)pBuffer[0] + 1) * sizeof(ctt)));
+	pBuffer = realloc(pBuffer, (2 * sizeof(int) + (*p_int + 1) * sizeof(ctt)));
 	void *aux;
-	aux = pBuffer[2 * sizeof(int) + (int)pBuffer[0] * sizeof(ctt)];
-	printf("Digite o nome e o nÃºmero da pessoa\n");
+	aux = pBuffer;
+	aux = aux + (2 * sizeof(int) + (*p_int) * sizeof(ctt));
+	printf("Digite o nome e o número da pessoa\n");
 	/*while(scanf("%c",aux) && *aux != ' '){
 		pBuffer = realloc(pBuffer, (2 * sizeof(int) + ((int)pBuffer[0] + 1) * sizeof(ctt)));
 	}*/
-	scanf("[&\n]%s",aux);//relloc *char cabe uma string? ler letra por letra? 1001 reallocs -> *char[50] = **char
-	scanf("%d",aux);
-	*pBuffer = *pBuffer + 1; 
+	scanf("[&\n]%s",(char*)aux);//relloc *char cabe uma string? ler letra por letra? 1001 reallocs -> *char[50] = **char
+	scanf("%d",(int*)aux);
+	//p_int =(int*) pBuffer;
+	*p_int = *p_int+1;
 }
 
 
 int main (){
+    int *p_int;
 	pBuffer = malloc(2 * sizeof(int));
-	*pBuffer = 0;
+	p_int = (int*)pBuffer;
+	*p_int = 0;
 
 do{
 	menu();
-	switch((int)pBuffer[1]){
+	switch(*(p_int +1)){
 		case 0: break;
-		case 1: incluir();break;
+		case 1: inserir();break;
 		case 2: apagar();break;
 		case 3: buscar();break;
 		case 4: listar();break;
 	}
 
-}while(*x != 0);
-	
+}while(*(p_int +1) != 0);
+
 }
