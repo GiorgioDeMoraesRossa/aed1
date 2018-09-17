@@ -1,7 +1,9 @@
 #include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 
 typedef struct contato{
-	char *nome[50];
+	char nome[50];
 	int *num;
 }ctt;
 
@@ -20,6 +22,7 @@ void menu(){
 
 void inserir(){
 	pBuffer = realloc(pBuffer, (2 * sizeof(int) + (*p_int + 1) * sizeof(ctt)));
+	p_int = (int*)pBuffer;
 	void *aux;
 	aux = pBuffer;
 	aux = aux + (2 * sizeof(int) + (*p_int) * sizeof(ctt));
@@ -33,9 +36,36 @@ void inserir(){
 	*p_int = *p_int+1;
 }
 
+void apagar(){
+    pBuffer = realloc(pBuffer, (2 * sizeof(int) + (*p_int) * sizeof(ctt) + 50*sizeof(char)));
+    p_int = (int*)pBuffer;
+    char *aux;
+    ctt *qmeh;
+    aux = pBuffer + (2 * sizeof(int) + (*p_int) * sizeof(ctt));
+    printf("Digite o nome da pessoa a ser apagada\n");
+    scanf("[&\n]%s",aux);
+    aux = pBuffer + (2 * sizeof(int) + (*p_int) * sizeof(ctt));
+    qmeh = pBuffer + (2 * sizeof(int));
+    while (qmeh != aux){ //endereço de inicio dos 2, como conseguir?
+        if(strcmp(qmeh->nome,aux) == 0){
+            *p_int = *p_int - 1;
+            ctt *prox;
+            prox = qmeh + 1;
+            while(qmeh != aux){
+                qmeh = prox;
+                qmeh++;
+                prox++;
+            }
+        }
+        else{
+            qmeh++;
+        }
+    }
+
+}
+
 
 int main (){
-    int *p_int;
 	pBuffer = malloc(2 * sizeof(int));
 	p_int = (int*)pBuffer;
 	*p_int = 0;
