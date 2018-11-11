@@ -25,60 +25,78 @@ int *p_int;
 
 //cada realloc = int esq, dir + 2 int
 void quickSort(){
-    int *qnts,*i,*j,*esq,*dir;
+    int *qnts,*i,*j,*esq,*dir,*auxi;
     ctt *mid,*temp,*aux,*aux2;
     qnts = pBuffer + 2 * sizeof(int) + (*p_int) * sizeof(ctt);
     *qnts = *qnts + 1;
 
-    printf("VARIAVEIS : %d  nts: %d\n",*p_int,*qnts);
-    pBuffer = realloc(pBuffer, (2 * sizeof(int) + (*p_int) * sizeof(ctt) + sizeof(int)+ (*qnts+1)*2* sizeof(int) +*qnts*2*sizeof(int) + sizeof(ctt)));
+    printf("VARIAVEIS :qnts: %d\n",*qnts);
+    pBuffer = realloc(pBuffer, (2 * sizeof(int) + (*p_int) * sizeof(ctt) + sizeof(int)+ (*qnts+1)*2* sizeof(int) +(*qnts)*2*sizeof(int) + 2* sizeof(ctt)));
     printf("ALOCOU\n");
     p_int = (int*)pBuffer;
 
     qnts = pBuffer + 2 * sizeof(int) + (*p_int) * sizeof(ctt);
-    temp =  pBuffer + 2 * sizeof(int) + (*p_int) * sizeof(ctt) + sizeof(int)+ (*qnts+1)*2* sizeof(int) +*qnts*2*sizeof(int);
 
-    printf("PARTE 1\n");
 
-    esq = pBuffer + 2 * sizeof(int) + (*p_int) * sizeof(ctt) + sizeof(int) + (*qnts-1) * sizeof(int); //o valor de esquerda e direita não são mantidos na próxima chamda;
-    dir = esq + 1;
 
-    printf("esq: %d, dir: %d",*esq,*dir);
-    mid = pBuffer + 2 * sizeof(int) + ((*esq+*dir)/2) * sizeof(ctt);
+    if(*qnts <= 1){ //caso onde o mid e o temp estao no final
+        temp = pBuffer + 2 * sizeof(int) + (*p_int) * sizeof(ctt) + sizeof(int)+ 6 * sizeof(int);
+        mid = pBuffer + 2 * sizeof(int) + (*p_int) * sizeof(ctt) + sizeof(int)+ 6 * sizeof(int) + sizeof(ctt);
+        esq = pBuffer + 2 * sizeof(int) + (*p_int) * sizeof(ctt) + sizeof(int);                      // quando usa realloc os dados ficam XED EDIJTT EDIJTT(2) EDIJTT(6) EDIJTT(10)
+        dir = pBuffer + 2 * sizeof(int) + (*p_int) * sizeof(ctt) + sizeof(int) + sizeof(int);
+        i = pBuffer + 2 * sizeof(int) + (*p_int) * sizeof(ctt) + sizeof(int) + 4 * sizeof(int);
+        j = i + 1;
+    }
+    else{ //caso onde mid e temp estao no meio, tem que pular alguns deles
+        esq = pBuffer + 2 * sizeof(int) + (*p_int) * sizeof(ctt) + sizeof(int) + (((*qnts -2)*4)+2) * sizeof(int) + (*qnts-2)*2*sizeof(ctt);
+        dir = pBuffer + 2 * sizeof(int) + (*p_int) * sizeof(ctt) + sizeof(int) + (((*qnts -2)*4)+3) * sizeof(int) + (*qnts-2)*2*sizeof(ctt);
+        temp = pBuffer + 2 * sizeof(int) + (*p_int) * sizeof(ctt) + sizeof(int)+ ((*qnts*4)+2) * sizeof(int)  + (*qnts-1)*2*sizeof(ctt);
+        mid = pBuffer + 2 * sizeof(int) + (*p_int) * sizeof(ctt) + sizeof(int)+ ((*qnts*4)+2) * sizeof(int)  + (((*qnts-1)*2)+1)*sizeof(ctt);
+        i = pBuffer + 2 * sizeof(int) + (*p_int) * sizeof(ctt) + sizeof(int) + *qnts * 4 * sizeof(int) + (*qnts-1) * 2 * sizeof(ctt);
+        j = i + 1;
+    }
 
-     printf("PARTE 2\n");
-    i = pBuffer + 2 * sizeof(int) + (*p_int) * sizeof(ctt) + sizeof(int) + (*qnts+1) *2* sizeof(int) + (*qnts-1)*2*sizeof(int);
-    j = i + 1;
+
+
+    printf("esq: %d, dir: %d\n",*esq,*dir);
+    aux = pBuffer + 2 * sizeof(int) + ((*esq+*dir)/2) * sizeof(ctt);
+    *mid = *aux;
 
     *i = *esq;
     *j= *dir;
-    printf("PARTE 3: %d, %d\n",*i,*j);
-    aux = pBuffer + 2 * sizeof(int) + *i * sizeof(ctt);
+
+   // printf("I e J iniciais: %d, %d\n",*i,*j);
+
+    aux = pBuffer + 2 * sizeof(int) + *i * sizeof(ctt); //ponteiros recebem o i e j;
     aux2 = pBuffer + 2 * sizeof(int) + (*j-1) * sizeof(ctt);
+
     do{
         printf("LOOP\n");
+        printf("--- esq = %d -- dir = %d -- i = %d -- j = %d\n",*esq,*dir,*i,*j);
 
-        while(strcmp(aux->email,mid->email) < 0){
+        printf("pre while1: aux: %s  mid: %s\n",aux->email,mid->email);
+        while(strcmp(aux->email,mid->email) < 0){ // os 2 while estao passando do mid procurando, faz com que coisas que ja estao no seu lugar troquem igual...
+                //ele chega aqui, quebra com 0, porém o aux fica com o elemento igual ao meio. Ate ai td bem, agr é necessário que quando ache um elemento <mid
+                //não troque de lugar, e sim jogue o elemento pro lado esquerdo.
             *i = *i + 1;
             aux = pBuffer + 2 * sizeof(int) + *i * sizeof(ctt);
+            printf("ok  1\n");
         }
+         printf("pos while 1: aux: %s \n",aux->email);
 
 
-        printf("while 1 0.5\n");
-
-
-        printf("pre while: aux: %s  mid: %s2\n",aux->email,mid->email);
-        while(strcmp(aux2->email,mid->email) > 0){
+        printf("pre while2: aux: %s  mid: %s\n",aux2->email,mid->email);
+        while(strcmp(mid->email,aux2->email) < 0){
             *j = *j - 1;
             aux2 = pBuffer + 2 * sizeof(int) + (*j-1) * sizeof(ctt);
+            printf("ok  2\n");
         }
+        printf("pos while 2: aux: %s \n",aux2->email);
 
-
-        printf("while 2\n");
 
         printf("Pre if\n");
         if(*i <= *j){
-            printf("IF\n");
+            printf("swap %s(%d) por %s(%d)\n",aux->email,*i,aux2->email,*j);
             *temp = *aux;
             *aux = *aux2;
             *aux2 = *temp;
@@ -88,29 +106,58 @@ void quickSort(){
             aux2--;
         }
     }while(*i <= *j);
+
+    printf("--- esq = %d -- dir = %d -- i = %d -- j = %d\n",*esq,*dir,*i,*j);
+
+
     printf("TENTA CHAMAR\n");
     if(*esq < *j){
+        //XED EDIJTT() EDIJTT() EDIJTT() EDIJTT
+        auxi = pBuffer + 2 * sizeof(int) + (*p_int) * sizeof(ctt) + sizeof(int) + (((*qnts -1)*4)+2) * sizeof(int) + (*qnts-1)*2*sizeof(ctt);
+        *auxi = *esq;
+        auxi = pBuffer + 2 * sizeof(int) + (*p_int) * sizeof(ctt) + sizeof(int) + (((*qnts -1)*4)+3) * sizeof(int) + (*qnts-1)*2*sizeof(ctt);
+        *auxi = *j;
         printf("ESQUERDA\n");
         quickSort();
-        pBuffer = realloc(pBuffer, (2 * sizeof(int) + (*p_int) * sizeof(ctt) + sizeof(int)+ (*qnts+1)*2* sizeof(int) +*qnts*2*sizeof(int) + sizeof(ctt)));
+        printf("VOLTA ESQUERDA\n");
         p_int = (int*)pBuffer;
         qnts = pBuffer + 2 * sizeof(int) + (*p_int) * sizeof(ctt);
         *qnts = *qnts - 1;
-        esq = pBuffer + 2 * sizeof(int) + (*p_int) * sizeof(ctt) + sizeof(int) + (*qnts-1) * sizeof(int);
-        dir = esq + 1;
+        pBuffer = realloc(pBuffer, (2 * sizeof(int) + (*p_int) * sizeof(ctt) + sizeof(int)+ (*qnts+1)*2* sizeof(int) +*qnts*2*sizeof(int) + 2*sizeof(ctt)));
+        p_int = (int*)pBuffer;
+        qnts = pBuffer + 2 * sizeof(int) + (*p_int) * sizeof(ctt);
+
+        if(*qnts == 1){
+            dir = pBuffer + 2 * sizeof(int) + (*p_int) * sizeof(ctt) + sizeof(int) + sizeof(int);
+            i = pBuffer + 2 * sizeof(int) + (*p_int) * sizeof(ctt) + sizeof(int) + 4 * sizeof(int);
+        }
+        else{
+            dir = pBuffer + 2 * sizeof(int) + (*p_int) * sizeof(ctt) + sizeof(int) + (((*qnts -2)*4)+3) * sizeof(int) + (*qnts-2)*2*sizeof(ctt);
+            i = pBuffer + 2 * sizeof(int) + (*p_int) * sizeof(ctt) + sizeof(int) + *qnts * 4 * sizeof(int) + (*qnts-1) * 2 * sizeof(ctt);
+        }
     }
 
     if(*i < *dir){
+        //XED EDIJTT() EDIJTT() EDIJTT() EDIJTT
+        auxi = pBuffer + 2 * sizeof(int) + (*p_int) * sizeof(ctt) + sizeof(int) + (((*qnts -1)*4)+2) * sizeof(int) + (*qnts-1)*2*sizeof(ctt);
+        *auxi = *i;
+        auxi = pBuffer + 2 * sizeof(int) + (*p_int) * sizeof(ctt) + sizeof(int) + (((*qnts -1)*4)+3) * sizeof(int) + (*qnts-1)*2*sizeof(ctt);
+        *auxi = *dir;
         printf("DIREITA\n");
         quickSort();
-        pBuffer = realloc(pBuffer, (2 * sizeof(int) + (*p_int) * sizeof(ctt) + sizeof(int)+ (*qnts+1)*2* sizeof(int) +*qnts*2*sizeof(int) + sizeof(ctt)));
+        printf("VOLTA DIREITA\n");
         p_int = (int*)pBuffer;
         qnts = pBuffer + 2 * sizeof(int) + (*p_int) * sizeof(ctt);
         *qnts = *qnts - 1;
-    }
+        pBuffer = realloc(pBuffer, (2 * sizeof(int) + (*p_int) * sizeof(ctt) + sizeof(int)+ (*qnts+1)*2* sizeof(int) +*qnts * 2 *sizeof(int) + 2 * sizeof(ctt)));
+        p_int = (int*)pBuffer;
+        qnts = pBuffer + 2 * sizeof(int) + (*p_int) * sizeof(ctt);
 
-    pBuffer = realloc(pBuffer, (2 * sizeof(int) + (*p_int) * sizeof(ctt)));
-	p_int = (int*)pBuffer;
+    }
+    if(*qnts == 1){
+        pBuffer = realloc(pBuffer, (2 * sizeof(int) + (*p_int) * sizeof(ctt)));
+        p_int = (int*)pBuffer;
+    }
 
 }
 
@@ -287,7 +334,7 @@ void listar(){
         case 1: BBSort();break;
         case 2: selectionSort();break;
 
-        // realloc inicial = int qnts=1; int esq, dir
+        // realloc inicial = int qnts=0; int esq, dir
         case 3: pBuffer = realloc(pBuffer,(2* sizeof(int)+ *p_int * sizeof(ctt) + sizeof(int) + 2*sizeof(int)));
                 p_int = (int*) pBuffer;
                 int *aux;
